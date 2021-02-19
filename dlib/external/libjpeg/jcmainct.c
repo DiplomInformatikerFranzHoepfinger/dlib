@@ -68,32 +68,32 @@ METHODDEF(void) process_data_buffer_main
 METHODDEF(void)
 start_pass_main (j_compress_ptr cinfo, J_BUF_MODE pass_mode)
 {
-  my_main_ptr main = (my_main_ptr) cinfo->main;
+  my_main_ptr my_main = (my_main_ptr) cinfo->main;
 
   /* Do nothing in raw-data mode. */
   if (cinfo->raw_data_in)
     return;
 
-  main->cur_iMCU_row = 0;	/* initialize counters */
-  main->rowgroup_ctr = 0;
-  main->suspended = FALSE;
-  main->pass_mode = pass_mode;	/* save mode for use by process_data */
+  my_main->cur_iMCU_row = 0;	/* initialize counters */
+  my_main->rowgroup_ctr = 0;
+  my_main->suspended = FALSE;
+  my_main->pass_mode = pass_mode;	/* save mode for use by process_data */
 
   switch (pass_mode) {
   case JBUF_PASS_THRU:
 #ifdef FULL_MAIN_BUFFER_SUPPORTED
-    if (main->whole_image[0] != NULL)
+    if (my_main->whole_image[0] != NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
 #endif
-    main->pub.process_data = process_data_simple_main;
+    my_main->pub.process_data = process_data_simple_main;
     break;
 #ifdef FULL_MAIN_BUFFER_SUPPORTED
   case JBUF_SAVE_SOURCE:
   case JBUF_CRANK_DEST:
   case JBUF_SAVE_AND_PASS:
-    if (main->whole_image[0] == NULL)
+    if (my_main->whole_image[0] == NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
-    main->pub.process_data = process_data_buffer_main;
+    my_main->pub.process_data = process_data_buffer_main;
     break;
 #endif
   default:
