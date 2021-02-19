@@ -269,7 +269,7 @@ set_bottom_pointers (j_decompress_ptr cinfo)
  * Also sets rowgroups_avail to indicate number of nondummy row groups in row.
  */
 {
-  my_main_ptr main = (my_main_ptr) cinfo->main;
+  my_main_ptr my_main = (my_main_ptr) cinfo->main;
   int ci, i, rgroup, iMCUheight, rows_left;
   jpeg_component_info *compptr;
   JSAMPARRAY xbuf;
@@ -286,12 +286,12 @@ set_bottom_pointers (j_decompress_ptr cinfo)
      * so we need only do it once.
      */
     if (ci == 0) {
-      main->rowgroups_avail = (JDIMENSION) ((rows_left-1) / rgroup + 1);
+      my_main->rowgroups_avail = (JDIMENSION) ((rows_left-1) / rgroup + 1);
     }
     /* Duplicate the last real sample row rgroup*2 times; this pads out the
      * last partial rowgroup and ensures at least one full rowgroup of context.
      */
-    xbuf = main->xbuffer[main->whichptr][ci];
+    xbuf = my_main->xbuffer[my_main->whichptr][ci];
     for (i = 0; i < rgroup * 2; i++) {
       xbuf[rows_left + i] = xbuf[rows_left-1];
     }
