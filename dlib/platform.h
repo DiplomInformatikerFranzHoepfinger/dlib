@@ -40,6 +40,11 @@
     #ifndef POSIX
         #define POSIX
     #endif
+
+
+	#if defined( ESP_PLATFORM) // see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html
+	#define MAXHOSTNAMELEN	64	/* max length of hostname */
+	#endif
  
     #ifndef HPUX
        #if defined(__hpux ) || defined(hpux) || defined (_hpux)
