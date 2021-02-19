@@ -386,15 +386,15 @@ process_data_context_main (j_decompress_ptr cinfo,
 			   JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
 			   JDIMENSION out_rows_avail)
 {
-  my_main_ptr main = (my_main_ptr) cinfo->main;
+  my_main_ptr my_main = (my_main_ptr) cinfo->main;
 
   /* Read input data if we haven't filled the main buffer yet */
-  if (! main->buffer_full) {
+  if (! my_main->buffer_full) {
     if (! (*cinfo->coef->decompress_data) (cinfo,
-					   main->xbuffer[main->whichptr]))
+					   my_main->xbuffer[my_main->whichptr]))
       return;			/* suspension forced, can do nothing more */
-    main->buffer_full = TRUE;	/* OK, we have an iMCU row to work with */
-    main->iMCU_row_ctr++;	/* count rows received */
+    my_main->buffer_full = TRUE;	/* OK, we have an iMCU row to work with */
+    my_main->iMCU_row_ctr++;	/* count rows received */
   }
 
   /* Postprocessor typically will not swallow all the input data it is handed
@@ -402,47 +402,47 @@ process_data_context_main (j_decompress_ptr cinfo,
    * to exit and restart.  This switch lets us keep track of how far we got.
    * Note that each case falls through to the next on successful completion.
    */
-  switch (main->context_state) {
+  switch (my_main->context_state) {
   case CTX_POSTPONED_ROW:
     /* Call postprocessor using previously set pointers for postponed row */
-    (*cinfo->post->post_process_data) (cinfo, main->xbuffer[main->whichptr],
-			&main->rowgroup_ctr, main->rowgroups_avail,
+    (*cinfo->post->post_process_data) (cinfo, my_main->xbuffer[my_main->whichptr],
+			&my_main->rowgroup_ctr, my_main->rowgroups_avail,
 			output_buf, out_row_ctr, out_rows_avail);
-    if (main->rowgroup_ctr < main->rowgroups_avail)
+    if (my_main->rowgroup_ctr < my_main->rowgroups_avail)
       return;			/* Need to suspend */
-    main->context_state = CTX_PREPARE_FOR_IMCU;
+    my_main->context_state = CTX_PREPARE_FOR_IMCU;
     if (*out_row_ctr >= out_rows_avail)
       return;			/* Postprocessor exactly filled output buf */
     /*FALLTHROUGH*/
   case CTX_PREPARE_FOR_IMCU:
     /* Prepare to process first M-1 row groups of this iMCU row */
-    main->rowgroup_ctr = 0;
-    main->rowgroups_avail = (JDIMENSION) (cinfo->min_DCT_v_scaled_size - 1);
+    my_main->rowgroup_ctr = 0;
+    my_main->rowgroups_avail = (JDIMENSION) (cinfo->min_DCT_v_scaled_size - 1);
     /* Check for bottom of image: if so, tweak pointers to "duplicate"
      * the last sample row, and adjust rowgroups_avail to ignore padding rows.
      */
-    if (main->iMCU_row_ctr == cinfo->total_iMCU_rows)
+    if (my_main->iMCU_row_ctr == cinfo->total_iMCU_rows)
       set_bottom_pointers(cinfo);
-    main->context_state = CTX_PROCESS_IMCU;
+    my_main->context_state = CTX_PROCESS_IMCU;
     /*FALLTHROUGH*/
   case CTX_PROCESS_IMCU:
     /* Call postprocessor using previously set pointers */
-    (*cinfo->post->post_process_data) (cinfo, main->xbuffer[main->whichptr],
-			&main->rowgroup_ctr, main->rowgroups_avail,
+    (*cinfo->post->post_process_data) (cinfo, my_main->xbuffer[my_main->whichptr],
+			&my_main->rowgroup_ctr, my_main->rowgroups_avail,
 			output_buf, out_row_ctr, out_rows_avail);
-    if (main->rowgroup_ctr < main->rowgroups_avail)
+    if (my_main->rowgroup_ctr < my_main->rowgroups_avail)
       return;			/* Need to suspend */
     /* After the first iMCU, change wraparound pointers to normal state */
-    if (main->iMCU_row_ctr == 1)
+    if (my_main->iMCU_row_ctr == 1)
       set_wraparound_pointers(cinfo);
     /* Prepare to load new iMCU row using other xbuffer list */
-    main->whichptr ^= 1;	/* 0=>1 or 1=>0 */
-    main->buffer_full = FALSE;
+    my_main->whichptr ^= 1;	/* 0=>1 or 1=>0 */
+    my_main->buffer_full = FALSE;
     /* Still need to process last row group of this iMCU row, */
     /* which is saved at index M+1 of the other xbuffer */
-    main->rowgroup_ctr = (JDIMENSION) (cinfo->min_DCT_v_scaled_size + 1);
-    main->rowgroups_avail = (JDIMENSION) (cinfo->min_DCT_v_scaled_size + 2);
-    main->context_state = CTX_POSTPONED_ROW;
+    my_main->rowgroup_ctr = (JDIMENSION) (cinfo->min_DCT_v_scaled_size + 1);
+    my_main->rowgroups_avail = (JDIMENSION) (cinfo->min_DCT_v_scaled_size + 2);
+    my_main->context_state = CTX_POSTPONED_ROW;
   }
 }
 
