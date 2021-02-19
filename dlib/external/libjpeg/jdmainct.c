@@ -200,7 +200,7 @@ make_funny_pointers (j_decompress_ptr cinfo)
  * This will be repeated at the beginning of each pass.
  */
 {
-  my_main_ptr main = (my_main_ptr) cinfo->main;
+  my_main_ptr my_main = (my_main_ptr) cinfo->main;
   int ci, i, rgroup;
   int M = cinfo->min_DCT_v_scaled_size;
   jpeg_component_info *compptr;
@@ -210,10 +210,10 @@ make_funny_pointers (j_decompress_ptr cinfo)
        ci++, compptr++) {
     rgroup = (compptr->v_samp_factor * compptr->DCT_v_scaled_size) /
       cinfo->min_DCT_v_scaled_size; /* height of a row group of component */
-    xbuf0 = main->xbuffer[0][ci];
-    xbuf1 = main->xbuffer[1][ci];
+    xbuf0 = my_main->xbuffer[0][ci];
+    xbuf1 = my_main->xbuffer[1][ci];
     /* First copy the workspace pointers as-is */
-    buf = main->buffer[ci];
+    buf = my_main->buffer[ci];
     for (i = 0; i < rgroup * (M + 2); i++) {
       xbuf0[i] = xbuf1[i] = buf[i];
     }
