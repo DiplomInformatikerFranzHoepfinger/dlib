@@ -44,6 +44,7 @@
 
 	#if defined( ESP_PLATFORM) // see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html
 	#define MAXHOSTNAMELEN	64	/* max length of hostname */
+	#define	NI_NAMEREQD     0x00000004
 	#endif
  
     #ifndef HPUX
