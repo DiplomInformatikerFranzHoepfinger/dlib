@@ -244,15 +244,15 @@ process_data_buffer_main (j_compress_ptr cinfo,
 GLOBAL(void)
 jinit_c_main_controller (j_compress_ptr cinfo, boolean need_full_buffer)
 {
-  my_main_ptr main;
+  my_main_ptr my_main;
   int ci;
   jpeg_component_info *compptr;
 
-  main = (my_main_ptr)
+  my_main = (my_main_ptr)
     (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_main_controller));
-  cinfo->main = (struct jpeg_c_main_controller *) main;
-  main->pub.start_pass = start_pass_main;
+  cinfo->main = (struct jpeg_c_main_controller *) my_main;
+  my_main->pub.start_pass = start_pass_main;
 
   /* We don't need to create a buffer in raw-data mode. */
   if (cinfo->raw_data_in)
@@ -267,7 +267,7 @@ jinit_c_main_controller (j_compress_ptr cinfo, boolean need_full_buffer)
     /* Note we pad the bottom to a multiple of the iMCU height */
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {
-      main->whole_image[ci] = (*cinfo->mem->request_virt_sarray)
+      my_main->whole_image[ci] = (*cinfo->mem->request_virt_sarray)
 	((j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
 	 compptr->width_in_blocks * compptr->DCT_h_scaled_size,
 	 (JDIMENSION) jround_up((long) compptr->height_in_blocks,
@@ -279,12 +279,12 @@ jinit_c_main_controller (j_compress_ptr cinfo, boolean need_full_buffer)
 #endif
   } else {
 #ifdef FULL_MAIN_BUFFER_SUPPORTED
-    main->whole_image[0] = NULL; /* flag for no virtual arrays */
+    my_main->whole_image[0] = NULL; /* flag for no virtual arrays */
 #endif
     /* Allocate a strip buffer for each component */
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {
-      main->buffer[ci] = (*cinfo->mem->alloc_sarray)
+      my_main->buffer[ci] = (*cinfo->mem->alloc_sarray)
 	((j_common_ptr) cinfo, JPOOL_IMAGE,
 	 compptr->width_in_blocks * compptr->DCT_h_scaled_size,
 	 (JDIMENSION) (compptr->v_samp_factor * compptr->DCT_v_scaled_size));
