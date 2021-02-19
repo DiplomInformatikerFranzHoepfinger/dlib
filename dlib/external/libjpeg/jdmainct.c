@@ -159,7 +159,7 @@ alloc_funny_pointers (j_decompress_ptr cinfo)
  * This is done only once, not once per pass.
  */
 {
-  my_main_ptr main = (my_main_ptr) cinfo->main;
+  my_main_ptr my_main = (my_main_ptr) cinfo->main;
   int ci, rgroup;
   int M = cinfo->min_DCT_v_scaled_size;
   jpeg_component_info *compptr;
@@ -168,10 +168,10 @@ alloc_funny_pointers (j_decompress_ptr cinfo)
   /* Get top-level space for component array pointers.
    * We alloc both arrays with one call to save a few cycles.
    */
-  main->xbuffer[0] = (JSAMPIMAGE)
+  my_main->xbuffer[0] = (JSAMPIMAGE)
     (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
 				cinfo->num_components * 2 * SIZEOF(JSAMPARRAY));
-  main->xbuffer[1] = main->xbuffer[0] + cinfo->num_components;
+  my_main->xbuffer[1] = my_main->xbuffer[0] + cinfo->num_components;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
@@ -184,9 +184,9 @@ alloc_funny_pointers (j_decompress_ptr cinfo)
       (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
 				  2 * (rgroup * (M + 4)) * SIZEOF(JSAMPROW));
     xbuf += rgroup;		/* want one row group at negative offsets */
-    main->xbuffer[0][ci] = xbuf;
+    my_main->xbuffer[0][ci] = xbuf;
     xbuf += rgroup * (M + 4);
-    main->xbuffer[1][ci] = xbuf;
+    my_main->xbuffer[1][ci] = xbuf;
   }
 }
 
