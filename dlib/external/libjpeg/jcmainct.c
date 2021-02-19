@@ -114,46 +114,46 @@ process_data_simple_main (j_compress_ptr cinfo,
 			  JSAMPARRAY input_buf, JDIMENSION *in_row_ctr,
 			  JDIMENSION in_rows_avail)
 {
-  my_main_ptr main = (my_main_ptr) cinfo->main;
+  my_main_ptr my_main = (my_main_ptr) cinfo->main;
 
-  while (main->cur_iMCU_row < cinfo->total_iMCU_rows) {
+  while (my_main->cur_iMCU_row < cinfo->total_iMCU_rows) {
     /* Read input data if we haven't filled the main buffer yet */
-    if (main->rowgroup_ctr < (JDIMENSION) cinfo->min_DCT_v_scaled_size)
+    if (my_main->rowgroup_ctr < (JDIMENSION) cinfo->min_DCT_v_scaled_size)
       (*cinfo->prep->pre_process_data) (cinfo,
 					input_buf, in_row_ctr, in_rows_avail,
-					main->buffer, &main->rowgroup_ctr,
+					my_main->buffer, &my_main->rowgroup_ctr,
 					(JDIMENSION) cinfo->min_DCT_v_scaled_size);
 
     /* If we don't have a full iMCU row buffered, return to application for
      * more data.  Note that preprocessor will always pad to fill the iMCU row
      * at the bottom of the image.
      */
-    if (main->rowgroup_ctr != (JDIMENSION) cinfo->min_DCT_v_scaled_size)
+    if (my_main->rowgroup_ctr != (JDIMENSION) cinfo->min_DCT_v_scaled_size)
       return;
 
     /* Send the completed row to the compressor */
-    if (! (*cinfo->coef->compress_data) (cinfo, main->buffer)) {
+    if (! (*cinfo->coef->compress_data) (cinfo, my_main->buffer)) {
       /* If compressor did not consume the whole row, then we must need to
        * suspend processing and return to the application.  In this situation
        * we pretend we didn't yet consume the last input row; otherwise, if
        * it happened to be the last row of the image, the application would
        * think we were done.
        */
-      if (! main->suspended) {
+      if (! my_main->suspended) {
 	(*in_row_ctr)--;
-	main->suspended = TRUE;
+	my_main->suspended = TRUE;
       }
       return;
     }
     /* We did finish the row.  Undo our little suspension hack if a previous
      * call suspended; then mark the main buffer empty.
      */
-    if (main->suspended) {
+    if (my_main->suspended) {
       (*in_row_ctr)++;
-      main->suspended = FALSE;
+      my_main->suspended = FALSE;
     }
-    main->rowgroup_ctr = 0;
-    main->cur_iMCU_row++;
+    my_main->rowgroup_ctr = 0;
+    my_main->cur_iMCU_row++;
   }
 }
 
