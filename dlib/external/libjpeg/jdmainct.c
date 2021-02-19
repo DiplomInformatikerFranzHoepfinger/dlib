@@ -346,14 +346,14 @@ process_data_simple_main (j_decompress_ptr cinfo,
 			  JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
 			  JDIMENSION out_rows_avail)
 {
-  my_main_ptr main = (my_main_ptr) cinfo->main;
+  my_main_ptr my_main = (my_main_ptr) cinfo->main;
   JDIMENSION rowgroups_avail;
 
   /* Read input data if we haven't filled the main buffer yet */
-  if (! main->buffer_full) {
-    if (! (*cinfo->coef->decompress_data) (cinfo, main->buffer))
+  if (! my_main->buffer_full) {
+    if (! (*cinfo->coef->decompress_data) (cinfo, my_main->buffer))
       return;			/* suspension forced, can do nothing more */
-    main->buffer_full = TRUE;	/* OK, we have an iMCU row to work with */
+    my_main->buffer_full = TRUE;	/* OK, we have an iMCU row to work with */
   }
 
   /* There are always min_DCT_scaled_size row groups in an iMCU row. */
@@ -364,14 +364,14 @@ process_data_simple_main (j_decompress_ptr cinfo,
    */
 
   /* Feed the postprocessor */
-  (*cinfo->post->post_process_data) (cinfo, main->buffer,
-				     &main->rowgroup_ctr, rowgroups_avail,
+  (*cinfo->post->post_process_data) (cinfo, my_main->buffer,
+				     &my_main->rowgroup_ctr, rowgroups_avail,
 				     output_buf, out_row_ctr, out_rows_avail);
 
   /* Has postprocessor consumed all the data yet? If so, mark buffer empty */
-  if (main->rowgroup_ctr >= rowgroups_avail) {
-    main->buffer_full = FALSE;
-    main->rowgroup_ctr = 0;
+  if (my_main->rowgroup_ctr >= rowgroups_avail) {
+    my_main->buffer_full = FALSE;
+    my_main->rowgroup_ctr = 0;
   }
 }
 
