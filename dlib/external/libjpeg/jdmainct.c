@@ -306,27 +306,27 @@ set_bottom_pointers (j_decompress_ptr cinfo)
 METHODDEF(void)
 start_pass_main (j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
 {
-  my_main_ptr main = (my_main_ptr) cinfo->main;
+  my_main_ptr my_main = (my_main_ptr) cinfo->main;
 
   switch (pass_mode) {
   case JBUF_PASS_THRU:
     if (cinfo->upsample->need_context_rows) {
-      main->pub.process_data = process_data_context_main;
+      my_main->pub.process_data = process_data_context_main;
       make_funny_pointers(cinfo); /* Create the xbuffer[] lists */
-      main->whichptr = 0;	/* Read first iMCU row into xbuffer[0] */
-      main->context_state = CTX_PREPARE_FOR_IMCU;
-      main->iMCU_row_ctr = 0;
+      my_main->whichptr = 0;	/* Read first iMCU row into xbuffer[0] */
+      my_main->context_state = CTX_PREPARE_FOR_IMCU;
+      my_main->iMCU_row_ctr = 0;
     } else {
       /* Simple case with no context needed */
-      main->pub.process_data = process_data_simple_main;
+      my_main->pub.process_data = process_data_simple_main;
     }
-    main->buffer_full = FALSE;	/* Mark buffer empty */
-    main->rowgroup_ctr = 0;
+    my_main->buffer_full = FALSE;	/* Mark buffer empty */
+    my_main->rowgroup_ctr = 0;
     break;
 #ifdef QUANT_2PASS_SUPPORTED
   case JBUF_CRANK_DEST:
     /* For last pass of 2-pass quantization, just crank the postprocessor */
-    main->pub.process_data = process_data_crank_post;
+    my_main->pub.process_data = process_data_crank_post;
     break;
 #endif
   default:
