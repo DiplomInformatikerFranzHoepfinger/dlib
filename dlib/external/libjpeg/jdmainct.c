@@ -475,15 +475,15 @@ process_data_crank_post (j_decompress_ptr cinfo,
 GLOBAL(void)
 jinit_d_main_controller (j_decompress_ptr cinfo, boolean need_full_buffer)
 {
-  my_main_ptr main;
+  my_main_ptr my_main;
   int ci, rgroup, ngroups;
   jpeg_component_info *compptr;
 
-  main = (my_main_ptr)
+  my_main = (my_main_ptr)
     (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_main_controller));
-  cinfo->main = (struct jpeg_d_main_controller *) main;
-  main->pub.start_pass = start_pass_main;
+  cinfo->main = (struct jpeg_d_main_controller *) my_main;
+  my_main->pub.start_pass = start_pass_main;
 
   if (need_full_buffer)		/* shouldn't happen */
     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
@@ -504,7 +504,7 @@ jinit_d_main_controller (j_decompress_ptr cinfo, boolean need_full_buffer)
        ci++, compptr++) {
     rgroup = (compptr->v_samp_factor * compptr->DCT_v_scaled_size) /
       cinfo->min_DCT_v_scaled_size; /* height of a row group of component */
-    main->buffer[ci] = (*cinfo->mem->alloc_sarray)
+    my_main->buffer[ci] = (*cinfo->mem->alloc_sarray)
 			((j_common_ptr) cinfo, JPOOL_IMAGE,
 			 compptr->width_in_blocks * compptr->DCT_h_scaled_size,
 			 (JDIMENSION) (rgroup * ngroups));
